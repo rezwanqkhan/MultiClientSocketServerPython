@@ -1,5 +1,6 @@
 import socket
 
+
 def run_server():
     # create a socket object
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,18 +23,21 @@ def run_server():
         request = client_socket.recv(1024)
         request = request.decode("utf-8")  # convert bytes to string
 
-        # if we receive "close" from the client, then we break
-        # out of the loop and close the connection
+        # check if the received message is "close"
         if request.lower() == "close":
             # send response to the client which acknowledges that the
             # connection should be closed and break out of the loop
             client_socket.send("closed".encode("utf-8"))
             break
 
-        print(f"Received: {request}")
-        response = "accepted".encode("utf-8")  # convert string to bytes
+        # split the received message by "+" and calculate the sum
+        numbers = request.split("+")
+        total = sum(int(num) for num in numbers)
 
-        # convert and send accept response to the client
+        print(f"Received: {request}, Sum: {total}")
+        response = str(total).encode("utf-8")  # convert integer total to bytes
+
+        # send the sum back to the client
         client_socket.send(response)
 
     # close connection socket with the client
@@ -42,5 +46,6 @@ def run_server():
 
     # close server socket
     server.close()
+
 
 run_server()
